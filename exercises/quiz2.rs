@@ -18,32 +18,49 @@
 // - The output element is going to be a Vector of strings.
 // Execute `rustlings hint quiz2` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
 pub enum Command {
     Uppercase,
     Trim,
-    Append(usize),
+    Append(u32),
 }
 
 mod my_module {
     use super::Command;
 
-    // TODO: Complete the function signature!
-    pub fn transformer(input: ???) -> ??? {
-        // TODO: Complete the output declaration!
-        let mut output: ??? = vec![];
+    pub fn concatBarToStringXTimes(initialString: &str, times: u32) -> String {
+        let mut result: String = initialString.to_owned();
+        for _ in 0..times {
+            result = result + "bar";
+        }
+        result
+    }
+
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
+        let mut output: Vec<String> = vec![];
         for (string, command) in input.iter() {
-            // TODO: Complete the function body. You can do it!
+            match command {
+                Command::Uppercase => output.push(to_uppercase(&string)),
+                Command::Trim => output.push(trim(&string)),
+                Command::Append(x) => output.push(concatBarToStringXTimes(string, *x)),
+            };
         }
         output
+    }
+
+    fn to_uppercase(string: &str) -> String {
+        string.to_uppercase()
+    }
+
+    fn trim(string: &str) -> String {
+        string.trim().to_string()
     }
 }
 
 #[cfg(test)]
 mod tests {
     // TODO: What do we have to import to have `transformer` in scope?
-    use ???;
+    use super::my_module::concatBarToStringXTimes;
+    use super::my_module::transformer;
     use super::Command;
 
     #[test]
@@ -54,6 +71,7 @@ mod tests {
             ("foo".into(), Command::Append(1)),
             ("bar".into(), Command::Append(5)),
         ]);
+        assert_eq!(concatBarToStringXTimes("takis", 2), "takisbarbar");
         assert_eq!(output[0], "HELLO");
         assert_eq!(output[1], "all roads lead to rome!");
         assert_eq!(output[2], "foobar");
