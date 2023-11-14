@@ -7,9 +7,7 @@
 use std::thread;
 use std::time::Duration;
 
-
 fn main() {
-
     let mut handles = vec![];
     for i in 0..10 {
         thread::spawn(move || {
@@ -27,5 +25,4 @@ fn main() {
     if completed_threads != 10 {
         panic!("Oh no! All the spawned threads did not finish!");
     }
-    
 }
