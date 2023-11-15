@@ -32,4 +32,3 @@ fn main() {
         println!("jobs completed {}", status.lock().unwrap().jobs_completed);
     }
 }
-//
