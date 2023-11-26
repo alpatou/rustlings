@@ -5,7 +5,11 @@
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
 // Execute `rustlings hint try_from_into` or use the `hint` watch subcommand for a hint.
 
-use std::convert::{TryFrom, TryInto};
+use std::{
+    convert::{TryFrom, TryInto},
+    fmt::Error,
+    num::ParseIntError,
+};
 
 #[derive(Debug, PartialEq)]
 struct Color {
@@ -23,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -34,10 +36,27 @@ enum IntoColorError {
 // but the slice implementation needs to check the slice length!
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
+fn color_from_array(the_array: [i16; 3]) -> Result<Color, IntoColorError> {
+    type Error = IntoColorError;
+    let mut array_in_u8: Vec<u8> = vec![];
+    for element in the_array {
+        if element < 0 || element > 255 {
+            return Err(Error::IntConversion);
+        }
+        array_in_u8.push(element as u8)
+    }
+    Ok(Color {
+        red: array_in_u8[0],
+        green: array_in_u8[1],
+        blue: array_in_u8[2],
+    })
+}
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (red, green, blue) = tuple;
+        return color_from_array((red, green, blue).into());
     }
 }
 
@@ -45,6 +64,7 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        return color_from_array(arr.into());
     }
 }
 
@@ -52,6 +72,11 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let array_unsliced: Result<[i16; 3], _> = slice.try_into();
+        return match array_unsliced {
+            Ok(x) => color_from_array(x),
+            Err(_) => Err(IntoColorError::BadLen),
+        };
     }
 }
 
